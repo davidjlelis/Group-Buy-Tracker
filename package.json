@@ -5,5 +5,8 @@
     "main": "index.js",
     "author": "David Lelis",
     "license": "Your Mom",
-    "private": false
+    "private": false,
+    "dependencies": {
+        "puppeteer": "^21.1.0"
+    }
 }
