@@ -1,0 +1,9 @@
+{
+    "name": "group-buy-tracker",
+    "version": "1.0.0",
+    "description": "Create a web-base application/website that scrapes across a given list of mechanical keyboard websites, grab’s their group buy data, and outputs the data in a data viz tracker for MK enthusiasts to track to keep vendors accountable.",
+    "main": "index.js",
+    "author": "David Lelis",
+    "license": "Your Mom",
+    "private": false
+}
