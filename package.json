@@ -6,6 +6,7 @@
     "author": "David Lelis",
     "license": "Your Mom",
     "private": false,
+    "type": "module",
     "dependencies": {
         "puppeteer": "^21.1.0"
     }
