@@ -17,13 +17,25 @@ const main = async () => {
     // separating group buys
     clean_text = await (await text.replaceAll(/\t/g,'splitting group buys'));
 
-    //clean_text = await (await text.replaceAll(/\v/g,'splitting test'));
+    clean_text = await (await text.replaceAll(/\s{2,}/g,','));
+    
+    
+
+    let text_array = await (await clean_text.split(","));
+
     //console.log("Text is: " + text);
     console.log("Text is: " + clean_text);
+    
+    
+    text_array.forEach(element => {
+        console.log(element);
+    });
+    
     await browser.close();
-
+    
 
 /*
+    // testing puppeteer
     await page.screenshot({ path: 'screenshot.png'});
     await browser.close();
 */
