@@ -19,12 +19,12 @@ const main = async () => {
 
     clean_text = await (await text.replaceAll(/\s{2,}/g,','));
     
-    
-
+    /* need to figure out a way to keep "Current Status: xxxxxx" and "Estimated Arrival: QX YYYY" into a single element */
+    // splitting into an array 
     let text_array = await (await clean_text.split(","));
 
     //console.log("Text is: " + text);
-    console.log("Text is: " + clean_text);
+    //console.log("Text is: " + clean_text);
     
     
     text_array.forEach(element => {
