@@ -11,7 +11,11 @@ const main = async () => {
     const f = await page.$("[class='tab']")
 
     const text = await (await f.getProperty('textContent')).jsonValue()
-    console.log("Text is: " + text)
+    const clean_text = await (await text.replaceAll(/\s/g,''))
+    console.log("Text is: " + clean_text)
+    await browser.close();
+
+
 /*
     await page.screenshot({ path: 'screenshot.png'});
     await browser.close();
