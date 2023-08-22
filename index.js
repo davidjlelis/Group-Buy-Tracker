@@ -1,4 +1,4 @@
-`import puppeteer from "puppeteer";
+import puppeteer from "./node_modules/puppeteer";
 
 const url = "https://novelkeys.com/pages/product-updates";
 
@@ -20,7 +20,7 @@ const main = async () => {
     clean_text = await (await text.replaceAll(/\s{2,}/g,','));
     
     /* need to figure out a way to keep "Current Status: xxxxxx" and "Estimated Arrival: QX YYYY" into a single element */
-    // splitting in`to an array 
+    // splitting in to an array 
     let text_array = await (await clean_text.split(","));
 
     //console.log("Text is: " + text);
