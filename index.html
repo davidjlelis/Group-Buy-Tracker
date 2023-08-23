@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <body>
-    
-    <script type = "module" src="./index.js"></script>
-<h1>Group Buy Tracker</h1>
-
-<p>Track your Group Buys</p>
-
+    <!-- HTML container for the chart -->
+    <div style="width: 80%; margin: auto;">
+        <canvas id="statusChart" width="400" height="200"></canvas>
+    </div>
+    <!-- Include your external JavaScript file -->
+    <script src="index.js"></script>
 </body>
 </html>

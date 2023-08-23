@@ -115,6 +115,57 @@ function compareQuarters(estimatedArrival, currentQuarter) {
 }
   
 
-scrapeGroupBuys().then(data => {
-    console.log(data);
+// Modified code to count the number of group buys in each status category
+function countGroupBuysByStatus(data) {
+    const statusCounts = {
+        "Group Buy is Late. Notify Vendor.": 0,
+        "Expect Group Buy soon": 0,
+        "Group Buy is in Progress": 0
+    };
+
+    data.forEach(groupBuys => {
+        groupBuys.forEach(groupBuy => {
+            statusCounts[groupBuy.groupBuyStatus]++;
+        });
+    });
+
+    return Object.values(statusCounts);
+}
+
+// Ensure this code runs after the document is loaded
+document.addEventListener('DOMContentLoaded', function () {
+    scrapeGroupBuys().then(data => {
+        // Count the number of group buys in each status category
+        const statusCounts = countGroupBuysByStatus(data);
+
+        // Log the statusCounts to the console
+        console.log(statusCounts);
+
+        // Create a bar chart
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        const statusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(statusCounts),
+                datasets: [{
+                    label: 'Number of Group Buys',
+                    data: statusCounts,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+    });
 });
