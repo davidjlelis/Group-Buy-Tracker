@@ -29,18 +29,21 @@ async function scrapeGroupBuys() {
 
     for (const element of groupBuyElements) {
       const title = await element.evaluate(node => node.textContent.trim());
+ 
+      // Wait for the <progress> element to become available
+      await page.waitForSelector('.preorder-timeline-progress-bar'); // Replace with your selector
+  
+      // Extract the progress bar text and parse out progress step, progress value, and estimated arrival
+      const progressValue = await page.evaluate(() => {
+        const progressBar = document.querySelector('.preorder-timeline-progress-bar'); // Replace with your selector
+        return progressBar.value;
+      });
+      console.log(progressValue);
 
-      const progressBar = await element.$('.preorder-timeline-progress-bar');
-      let progressValue = null;
-
-      if (progressBar) {
-        progressValue = await progressBar.evaluate(node => node.style.width);
-      }
-
-      groupBuys.push({ type: groupBuyType, title, progressValue });
+      //groupBuys.push({ type: groupBuyType, title, progressStep, progressValue, estimatedArrival });
     }
 
-    allGroupBuys.push(groupBuys);
+    //allGroupBuys.push(groupBuys);
   }
 
   await browser.close();
