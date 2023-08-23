@@ -1,44 +1,53 @@
-import puppeteer from "./node_modules/puppeteer";
+import puppeteer from "puppeteer";
 
-const url = "https://novelkeys.com/pages/product-updates";
+async function scrapeGroupBuys() {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-const main = async () => {
+  await page.goto('https://novelkeys.com/pages/product-updates');
+  await page.waitForSelector('.tab-button-text', { timeout: 10000 });
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url);
+  const tabButtons = await page.$$('.tab-button');
 
-    const f = await page.$("[class='tab']");
+  const allGroupBuyTypes = [];
 
-    const text = await (await f.getProperty('textContent')).jsonValue();
-    
-    // remove new line
-    let clean_text = await (await text.replaceAll(/\n/g,''));
-    // separating group buys
-    clean_text = await (await text.replaceAll(/\t/g,'splitting group buys'));
+  for (const tabButton of tabButtons) {
+    const groupBuyType = await tabButton.$eval('.tab-button-text', node => node.textContent.trim());
+    allGroupBuyTypes.push(groupBuyType);
+  }
 
-    clean_text = await (await text.replaceAll(/\s{2,}/g,','));
-    
-    /* need to figure out a way to keep "Current Status: xxxxxx" and "Estimated Arrival: QX YYYY" into a single element */
-    // splitting in to an array 
-    let text_array = await (await clean_text.split(","));
+  const tabs = await page.$$('.tab');
 
-    //console.log("Text is: " + text);
-    //console.log("Text is: " + clean_text);
-    
-    
-    text_array.forEach(element => {
-        console.log(element);
-    });
-    
-    await browser.close();
-    
+  const allGroupBuys = [];
 
-/*
-    // testing puppeteer
-    await page.screenshot({ path: 'screenshot.png'});
-    await browser.close();
-*/
+  for (const tab of tabs) {
+    const groupBuys = [];
+
+    const groupBuyType = allGroupBuyTypes.shift(); // Get the type from the array
+
+    const groupBuyElements = await tab.$$('.preorder-timeline-title');
+
+    for (const element of groupBuyElements) {
+      const title = await element.evaluate(node => node.textContent.trim());
+
+      const progressBar = await element.$('.preorder-timeline-progress-bar');
+      let progressValue = null;
+
+      if (progressBar) {
+        progressValue = await progressBar.evaluate(node => node.style.width);
+      }
+
+      groupBuys.push({ type: groupBuyType, title, progressValue });
+    }
+
+    allGroupBuys.push(groupBuys);
+  }
+
+  await browser.close();
+
+  return allGroupBuys;
 }
 
-main();
+scrapeGroupBuys().then(data => {
+  console.log(data);
+});
