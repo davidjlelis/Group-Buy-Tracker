@@ -1,10 +1,13 @@
 import puppeteer from "puppeteer";
 
+/* Scrap Group Buy Data from NovelKey's Update website*/
+
 async function scrapeGroupBuys() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     const currentQuarter = getCurrentQuarterAndYear();
     //console.log(currentQuarter);
+
     await page.goto('https://novelkeys.com/pages/product-updates');
     await page.waitForSelector('.tab-button-text', { timeout: 10000 });
 
