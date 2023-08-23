@@ -3,8 +3,8 @@ import puppeteer from "puppeteer";
 async function scrapeGroupBuys() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    const currentQuarter = getCurrentQuarterAndYear;
-
+    const currentQuarter = getCurrentQuarterAndYear();
+    //console.log(currentQuarter);
     await page.goto('https://novelkeys.com/pages/product-updates');
     await page.waitForSelector('.tab-button-text', { timeout: 10000 });
 
@@ -41,14 +41,10 @@ async function scrapeGroupBuys() {
 
             //console.log(groupBuyType, title, currentStatus, estimatedArrival);
             
-            if(currentQuarter !== estimatedArrival){
-                console.log("Not Match");
-            } else {
-                console.log("Match");
-            }
+            const groupBuyStatus = compareQuarters(estimatedArrival, currentQuarter);
 
             // Push the data into your groupBuys array if needed
-            groupBuys.push({ type: groupBuyType, title, currentStatus, estimatedArrival });
+            groupBuys.push({ type: groupBuyType, title, currentStatus, estimatedArrival, currentQuarter, groupBuyStatus});
         }
 
         // Push the groupBuys array into the allGroupBuys array if needed
@@ -60,7 +56,7 @@ async function scrapeGroupBuys() {
     return allGroupBuys;
 }
 
-function getCurrentQuarterAndYear() {
+function getCurrentQuarterAndYear(date) {
     const now = new Date();
     const month = now.getMonth() + 1; // JavaScript months are 0-based, so we add 1
 
@@ -76,9 +72,48 @@ function getCurrentQuarterAndYear() {
     }
 
     const year = now.getFullYear();
-
     return (quarter+" "+year);
 }
+
+function compareQuarters(estimatedArrival, currentQuarter) {
+// Map quarter names to their corresponding months
+    const quarters = {
+        'Q1': [0, 1, 2],  // January, February, March
+        'Q2': [3, 4, 5],  // April, May, June
+        'Q3': [6, 7, 8],  // July, August, September
+        'Q4': [9, 10, 11] // October, November, December
+    };
+
+    // Split the estimatedArrival into quarter and year
+    const [quarter, year] = estimatedArrival.split(' ');
+
+    // Calculate the first month of the quarter
+    const firstMonthOfQuarter = quarters[quarter][0];
+
+    // Calculate the last month of the quarter
+    const lastMonthOfQuarter = quarters[quarter][2];
+
+    // Calculate the last day of the quarter
+    const lastDayOfQuarter = new Date(year, lastMonthOfQuarter + 1, 0);
+
+    // Create a date object for the estimated arrival (last day of the quarter)
+    const estimatedArrivalDate = new Date(year, lastMonthOfQuarter, lastDayOfQuarter.getDate());
+
+    // Calculate the start and end dates of the current quarter
+    const currentQuarterParts = currentQuarter.split(' ');
+    const currentQuarterStart = new Date(currentQuarterParts[1], quarters[currentQuarterParts[0]][0], 1);
+    const currentQuarterEnd = new Date(currentQuarterParts[1], quarters[currentQuarterParts[0]][2] + 1, 0);
+
+    // Compare the estimated arrival date with the current quarter
+    if (estimatedArrivalDate < currentQuarterStart) {
+        return "Group Buy is Late. Notify Vendor.";
+    } else if (estimatedArrivalDate >= currentQuarterStart && estimatedArrivalDate <= currentQuarterEnd) {
+        return "Expect Group Buy soon";
+    } else {
+        return "Group Buy is in Progress";
+    }
+}
+  
 
 scrapeGroupBuys().then(data => {
     console.log(data);
